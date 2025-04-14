@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+
+  tests:
+    build: ./tests  # тут буде твій Dockerfile з python
+    depends_on:
+      - postgres
+    volumes:
+      - ./tests:/app
+    working_dir: /app
+    command: ["pytest"]
+
+volumes:
+  jenkins_home:
